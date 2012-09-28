@@ -14,6 +14,7 @@ end
 
 Bundler.require
 require File.expand_path('../../lib/deposit', __FILE__)
+require 'deposit'
 
 require 'ammeter/init'
 
@@ -43,24 +44,42 @@ if File.exists?(database_yml)
     
     ActiveRecord::Base.establish_connection(config)
   end
-    
+  
   ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), "debug.log"))
   ActiveRecord::Base.default_timezone = :utc
   
   ActiveRecord::Base.silence do
     ActiveRecord::Migration.verbose = false
-    
-    load(File.dirname(__FILE__) + '/schema.rb')
-    load(File.dirname(__FILE__) + '/models.rb')
-  end  
+
+    ActiveRecord::Schema.define version: 0 do
+      create_table :depositable_models, force: true do |t|
+        t.column :name, :string
+      end
+
+      create_table :deposit_slots, force: true do |t|
+        t.integer :item_id
+        t.string :item_type
+
+        t.string :key
+        t.text :data
+
+        t.timestamps
+      end
+
+      add_index :deposit_slots, [:item_id, :item_type, :key]
+    end
+
+    class DepositableModel < ActiveRecord::Base
+      acts_as_depositable
+    end
+  end
   
 else
   raise "Please create #{database_yml} first to configure your database. Take a look at: #{database_yml}.sample"
 end
 
 def clean_database!
-  models = [ActsAsTaggableOn::Tag, ActsAsTaggableOn::Tagging, TaggableModel, OtherTaggableModel, InheritingTaggableModel,
-            AlteredInheritingTaggableModel, TaggableUser, UntaggableModel, OrderedTaggableModel]
+  models = [DepositableModel, Deposit::DepositSlot]
   models.each do |model|
     ActiveRecord::Base.connection.execute "DELETE FROM #{model.table_name}"
   end

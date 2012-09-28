@@ -5,7 +5,7 @@ module Deposit
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def act_as_depositable
+      def acts_as_depositable
         include AsDepositable      
       end
     end
