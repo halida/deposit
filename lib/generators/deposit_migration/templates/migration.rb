@@ -1,6 +1,6 @@
 class DepositMigration < ActiveRecord::Migration
   def change
-    create_table :deposits do |t|
+    create_table :deposit_slots do |t|
       t.integer :item_id
       t.string :item_type
 
@@ -10,6 +10,6 @@ class DepositMigration < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :deposits, [:item_id, :item_type, :key]
+    add_index :deposit_slots, [:item_id, :item_type, :key]
   end
 end

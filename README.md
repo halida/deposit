@@ -17,7 +17,7 @@ Add this to your Gemfile:
 
 run `bundle install`,
 
-And then `rails g deposit:install`, It will create table `deposits` for you.
+And then `rails g deposit_migration`, It will create table `deposits` for you.
 
 Usage
 ---------------------------------

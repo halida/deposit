@@ -2,8 +2,10 @@ require "active_record"
 
 module Deposit
   module Depositable
-    def as_depositable
-      self.class.instance_eval do
+    extend ActiveSupport::Concern
+
+    module ClassMethods
+      def act_as_depositable
         include AsDepositable      
       end
     end
@@ -13,25 +15,28 @@ module Deposit
     extend ActiveSupport::Concern
 
     included do
-      has_one :deposit, as: :item, dependent: :destroy
+      has_many :deposit_slots, class_name: "Deposit::DepositSlot", as: :item, dependent: :destroy
     end
 
-    def deposit
-      return self[:deposit] if self[:deposit]
-      return Deposit.find_or_create_by_item_id_and_item_type(item_id: self.id, item_type: "User")
-    end
-
-    def save_deposit name, value
-      d = self.deposit
-      d.data[name] = value
+    def save_deposit key, value
+      d = self.deposit_slots.find_or_create_by_key key
+      d.data = value
       d.save
     end
 
-    def load_deposit name
-      self.deposit.data[name]
+    def load_deposit key
+      d = self.deposit_slots.where(key: key).first
+      return nil unless d
+      return d.data
     end
 
   end
+
+  class DepositSlot < ActiveRecord::Base
+    belongs_to :item, polymorphic: true
+    serialize :data
+  end
+
 end
 
 if defined?(ActiveRecord::Base)
