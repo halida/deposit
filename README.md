@@ -12,7 +12,7 @@ Install
 Add this to your Gemfile: 
 
 ```ruby
-    gem 'deposit'
+gem 'deposit'
 ```
 
 run `bundle install`,
