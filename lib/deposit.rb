@@ -6,7 +6,7 @@ module Deposit
 
     module ClassMethods
       def acts_as_depositable
-        include AsDepositable      
+        include AsDepositable
       end
     end
   end
@@ -19,13 +19,13 @@ module Deposit
     end
 
     def save_deposit key, value
-      d = self.deposit_slots.find_or_create_by_key key
+      d = self.deposit_slots.find_or_create_by_key key.to_s
       d.data = value
       d.save
     end
 
     def load_deposit key
-      d = self.deposit_slots.where(key: key).first
+      d = self.deposit_slots.where(key: key.to_s).first
       return nil unless d
       return d.data
     end
