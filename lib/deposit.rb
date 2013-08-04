@@ -30,6 +30,12 @@ module Deposit
       return d.data
     end
 
+    def update_deposit key, value
+      data = self.load_deposit(key) || {}
+      data.merge!(value)
+      self.save_deposit(key, data)
+    end
+
   end
 
   class DepositSlot < ActiveRecord::Base

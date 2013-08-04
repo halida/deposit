@@ -37,3 +37,6 @@ p.save_deposit :transition, {id: 123, date: Time.now}
 p.load_deposit :transition # => return saved data
 ```
 
+Testing
+----------------------------------
+First `bundle install`, then `make test`.
